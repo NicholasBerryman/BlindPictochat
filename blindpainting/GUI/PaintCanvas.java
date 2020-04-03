@@ -6,8 +6,8 @@
 package blindpainting.GUI;
 
 import blindpainting.Network.NetworkCanvas.NetworkCanvasClient;
-import blindpainting.GUI.viewing.DrawQueue;
-import blindpainting.GUI.viewing.DrawQueueItem;
+import blindpainting.GUI.DrawQueue.DrawQueue;
+import blindpainting.GUI.DrawQueue.DrawQueueItem;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +49,9 @@ public class PaintCanvas {
     
     private NetworkCanvasClient netCanvas;
     
+    private double pathX;
+    private double pathY;
+    
     
     public PaintCanvas(){
         canvasPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -86,6 +89,14 @@ public class PaintCanvas {
             } catch (IOException ex) {
                 Logger.getLogger(PaintCanvas.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    private void sendDone(){
+        try {
+            netCanvas.sendDone();
+        } catch (IOException ex) {
+            Logger.getLogger(PaintCanvas.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -134,9 +145,11 @@ public class PaintCanvas {
                     case PATH:
                         gc.setStroke(paintColour);
                         gc.setLineWidth(paintStroke);
+                        gc.lineTo(e.getX()/canvas.getWidth(), e.getY()/canvas.getHeight());
                         gc.beginPath();
-                        gc.lineTo(e.getX(), e.getY());
-                        DrawQueueItem item = new DrawQueueItem();
+                        pathX = e.getX()/canvas.getWidth();
+                        pathY = e.getY()/canvas.getHeight();
+                        /*DrawQueueItem item = new DrawQueueItem();
                         item.setShape(Shape.PATH);
                         item.setColor("line", paintColour);
                         item.setData("strokeWidth", paintStroke);
@@ -150,7 +163,7 @@ public class PaintCanvas {
                         item.setData("state", 1.0);
                         lastStroke.push(item);
                         queue.push(item);
-                        sendLastStroke();
+                        sendLastStroke();*/
                         break;
 
                     case ERASE:
@@ -221,11 +234,21 @@ public class PaintCanvas {
                         lastStroke.clear();
                         gc.lineTo(e.getX(), e.getY());
                         gc.stroke();
-                        item = new DrawQueueItem();
+                        /*item = new DrawQueueItem();
                         item.setShape(Shape.PATH);
                         item.setData("x", e.getX()/canvas.getWidth());
                         item.setData("y", e.getY()/canvas.getHeight());
-                        item.setData("state", 1.0);
+                        item.setData("state", 1.0);*/
+                        item = new DrawQueueItem();
+                        item.setShape(Shape.LINE);
+                        item.setColor("line", paintColour);
+                        item.setData("startX", pathX);
+                        item.setData("startY", pathY);
+                        pathX = e.getX()/canvas.getWidth();
+                        pathY = e.getY()/canvas.getHeight();
+                        item.setData("endX", pathX);
+                        item.setData("endY", pathY);
+                        item.setData("strokeWidth",paintStroke);
                         queue.push(item);
                         lastStroke.push(item);
                         sendLastStroke();
@@ -242,7 +265,8 @@ public class PaintCanvas {
                         item.setData("width", lineWidth);
                         queue.push(item);
                         lastStroke.push(item);
-                        sendLastStroke();rect.setStroke(Color.BLACK);
+                        sendLastStroke();
+                        rect.setStroke(Color.BLACK);
                         rect.setFill(Color.WHITE);
                         rect.setStrokeWidth(1);
                         rect.setX(e.getX());                
@@ -284,7 +308,7 @@ public class PaintCanvas {
                         gc.lineTo(e.getX(), e.getY());
                         gc.stroke();
                         gc.closePath();
-                        item = new DrawQueueItem();
+                        /*item = new DrawQueueItem();
                         item.setShape(Shape.PATH);
                         item.setData("x", e.getX()/canvas.getWidth());
                         item.setData("y", e.getY()/canvas.getHeight());
@@ -293,10 +317,21 @@ public class PaintCanvas {
                         lastStroke.push(item);
                         item = new DrawQueueItem();
                         item.setShape(Shape.PATH);
-                        item.setData("state", 2.0);
+                        item.setData("state", 2.0);*/
+                        item = new DrawQueueItem();
+                        item.setShape(Shape.LINE);
+                        item.setColor("line", paintColour);
+                        item.setData("startX", pathX);
+                        item.setData("startY", pathY);
+                        pathX = e.getX()/canvas.getWidth();
+                        pathY = e.getY()/canvas.getHeight();
+                        item.setData("endX", pathX);
+                        item.setData("endY", pathY);
+                        item.setData("strokeWidth",paintStroke);
                         queue.push(item);
                         lastStroke.push(item);
                         sendLastStroke();
+                        sendDone();
                         break;
 
                     case ERASE:
@@ -312,6 +347,7 @@ public class PaintCanvas {
                         rect.setWidth(lineWidth);
                         rect.setHeight(lineWidth);
                         rect.setVisible(false);
+                        sendDone();
                         break;
 
                     case LINE:
@@ -330,6 +366,7 @@ public class PaintCanvas {
                         queue.push(item);
                         lastStroke.push(item);
                         sendLastStroke();
+                        sendDone();
                         break;
 
                     case RECT:
@@ -353,6 +390,7 @@ public class PaintCanvas {
                         gc.strokeRect(rect.getX()+rect.getTranslateX(), rect.getY()+rect.getTranslateY(), rect.getWidth(), rect.getHeight());
                         rect.setVisible(false);
                         sendLastStroke();
+                        sendDone();
                         break;
 
                     case CIRCLE:
@@ -372,6 +410,7 @@ public class PaintCanvas {
                         queue.push(item);
                         lastStroke.push(item);
                         sendLastStroke();
+                        sendDone();
                         break;
                 }
             }

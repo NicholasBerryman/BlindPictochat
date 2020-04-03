@@ -79,6 +79,8 @@ public class DrawBar {
         box.setPrefWidth(100);
         messagePane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         messagePane.setContent(chat);
+        messagePane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        messagePane.setFitToWidth(true);
         initialiseActions();
         widthSlider.setValue(3);
         canvas.setStroke(3);

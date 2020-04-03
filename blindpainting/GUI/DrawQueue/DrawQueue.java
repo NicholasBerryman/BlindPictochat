@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blindpainting.GUI.viewing;
+package blindpainting.GUI.DrawQueue;
 
 import blindpainting.GUI.PaintCanvas;
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import java.util.LinkedList;
  * @author Nick Berryman
  */
 public class DrawQueue implements Serializable{
-    private LinkedList<DrawQueueItem> queue = new LinkedList<>();
+    private final LinkedList<DrawQueueItem> queue = new LinkedList<>();
     
     public int size(){
         return queue.size();
@@ -95,3 +95,4 @@ public class DrawQueue implements Serializable{
         return queue.toString();
     }
 }
+

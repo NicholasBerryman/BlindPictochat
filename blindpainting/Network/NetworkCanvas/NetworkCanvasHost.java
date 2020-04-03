@@ -6,7 +6,7 @@
 package blindpainting.Network.NetworkCanvas;
 
 import blindpainting.Network.NetworkCanvas.NetworkCanvasClient.OtherPlayer;
-import blindpainting.GUI.viewing.DrawQueue;
+import blindpainting.GUI.DrawQueue.DrawQueue;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -279,7 +279,7 @@ class NetworkCanvasHostListener implements Runnable {
                     case "stroke":
                         item = (DrawQueue) gc.read();
                         nc.sendStroke(gc, item);
-                        if ("Painter".equals(gc.getRole())) nc.sendNextTurn();
+                        //if ("Painter".equals(gc.getRole())) nc.sendNextTurn();
                         break;
                     case "exit":
                         nc.removeClient(gc);
@@ -288,6 +288,9 @@ class NetworkCanvasHostListener implements Runnable {
                         break;
                     case "clear":
                         nc.sendClear();
+                    case "done":
+                        if (nc.clients.indexOf(gc) == nc.activePainterIndex) nc.sendNextTurn(); //TODO implement this
+                        break;
                     default:
                         break;
                 }

@@ -7,7 +7,7 @@ package blindpainting.Network.NetworkCanvas;
 
 import blindpainting.GUI.PaintCanvas;
 import blindpainting.Network.NetworkCanvas.NetworkCanvasClient.OtherPlayer;
-import blindpainting.GUI.viewing.DrawQueue;
+import blindpainting.GUI.DrawQueue.DrawQueue;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -115,6 +115,10 @@ public class NetworkCanvasClient {
     
     public void sendClear() throws IOException{
         out.writeObject("clear");
+    }
+    
+    public void sendDone() throws IOException{
+        out.writeObject("done");
     }
     
     PaintCanvas getCanvas(){
