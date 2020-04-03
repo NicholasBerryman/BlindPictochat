@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blindpainting.GUI.common;
+package blindpainting.GUI;
 
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasClient;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasClient;
 import blindpainting.GUI.viewing.DrawQueue;
 import blindpainting.GUI.viewing.DrawQueueItem;
 import java.io.IOException;
@@ -147,12 +147,23 @@ public class PaintCanvas {
                         item.setData("state", 1.0);
                         lastStroke.push(item);
                         queue.push(item);
+                        sendLastStroke();
                         break;
 
                     case ERASE:
                         gc.setLineWidth(paintStroke);
                         double lineWidth = gc.getLineWidth();
                         gc.clearRect(e.getX() - lineWidth / 2, e.getY() - lineWidth / 2, lineWidth, lineWidth);
+                        rect.setStroke(Color.BLACK);
+                        rect.setFill(Color.WHITE);
+                        rect.setStrokeWidth(1);
+                        rect.setX(e.getX());                
+                        rect.setY(e.getY());
+                        rect.setTranslateX(- lineWidth / 2);
+                        rect.setTranslateY(- lineWidth / 2);
+                        rect.setWidth(lineWidth);
+                        rect.setHeight(lineWidth);
+                        rect.setVisible(true);
                         break;
 
                     case LINE:
@@ -204,6 +215,7 @@ public class PaintCanvas {
                 DrawQueueItem item;
                 switch (currentShape){
                     case PATH:
+                        lastStroke.clear();
                         gc.lineTo(e.getX(), e.getY());
                         gc.stroke();
                         item = new DrawQueueItem();
@@ -213,9 +225,11 @@ public class PaintCanvas {
                         item.setData("state", 1.0);
                         queue.push(item);
                         lastStroke.push(item);
+                        sendLastStroke();
                         break;
 
                     case ERASE:
+                        lastStroke.clear();
                         double lineWidth = gc.getLineWidth();
                         gc.clearRect(e.getX() - lineWidth / 2, e.getY() - lineWidth / 2, lineWidth, lineWidth);
                         item = new DrawQueueItem();
@@ -225,6 +239,16 @@ public class PaintCanvas {
                         item.setData("width", lineWidth);
                         queue.push(item);
                         lastStroke.push(item);
+                        sendLastStroke();rect.setStroke(Color.BLACK);
+                        rect.setFill(Color.WHITE);
+                        rect.setStrokeWidth(1);
+                        rect.setX(e.getX());                
+                        rect.setY(e.getY());
+                        rect.setTranslateX(- lineWidth / 2);
+                        rect.setTranslateY(- lineWidth / 2);
+                        rect.setWidth(lineWidth);
+                        rect.setHeight(lineWidth);
+                        rect.setVisible(true);
                         break;
 
                     case LINE:
@@ -253,6 +277,7 @@ public class PaintCanvas {
                 currentAction = Action.NONE;
                 switch (currentShape){
                     case PATH:
+                        lastStroke.clear();
                         gc.lineTo(e.getX(), e.getY());
                         gc.stroke();
                         gc.closePath();
@@ -268,11 +293,22 @@ public class PaintCanvas {
                         item.setData("state", 2.0);
                         queue.push(item);
                         lastStroke.push(item);
+                        sendLastStroke();
                         break;
 
                     case ERASE:
                         double lineWidth = gc.getLineWidth();
                         gc.clearRect(e.getX() - lineWidth / 2, e.getY() - lineWidth / 2, lineWidth, lineWidth);
+                        rect.setStroke(Color.BLACK);
+                        rect.setFill(Color.WHITE);
+                        rect.setStrokeWidth(1);
+                        rect.setX(e.getX());                
+                        rect.setY(e.getY());
+                        rect.setTranslateX(0);
+                        rect.setTranslateY(0);
+                        rect.setWidth(lineWidth);
+                        rect.setHeight(lineWidth);
+                        rect.setVisible(false);
                         break;
 
                     case LINE:
@@ -290,6 +326,7 @@ public class PaintCanvas {
                         item.setData("strokeWidth",paintStroke);
                         queue.push(item);
                         lastStroke.push(item);
+                        sendLastStroke();
                         break;
 
                     case RECT:
@@ -312,6 +349,7 @@ public class PaintCanvas {
                         gc.fillRect(rect.getX()+rect.getTranslateX(), rect.getY()+rect.getTranslateY(), rect.getWidth(), rect.getHeight());
                         gc.strokeRect(rect.getX()+rect.getTranslateX(), rect.getY()+rect.getTranslateY(), rect.getWidth(), rect.getHeight());
                         rect.setVisible(false);
+                        sendLastStroke();
                         break;
 
                     case CIRCLE:
@@ -330,14 +368,18 @@ public class PaintCanvas {
                         item.setData("strokeWidth",paintStroke);
                         queue.push(item);
                         lastStroke.push(item);
+                        sendLastStroke();
                         break;
                 }
-                sendLastStroke();
             }
         });
     }
     
-    public void addLine(double startX, double startY, double endX, double endY, double strokeWidth, Color colour){
+    public synchronized void clear(){
+        gc.clearRect(0, 0, canvasPane.getWidth(), canvasPane.getHeight());
+    }
+    
+    public synchronized void addLine(double startX, double startY, double endX, double endY, double strokeWidth, Color colour){
         startX *= canvas.getWidth();
         endX *= canvas.getWidth();
         startY *= canvas.getHeight();
@@ -347,7 +389,7 @@ public class PaintCanvas {
         gc.strokeLine(startX, startY, endX, endY);
     }
     
-    public void addRect(double startX, double startY, double width, double height, double strokeWidth, Color lineColour, Color fillColour){
+    public synchronized void addRect(double startX, double startY, double width, double height, double strokeWidth, Color lineColour, Color fillColour){
         startX *= canvas.getWidth();
         width *= canvas.getWidth();
         startY *= canvas.getHeight();
@@ -359,7 +401,7 @@ public class PaintCanvas {
         gc.strokeRect(startX, startY, width, height);
     }
     
-    public void addCirc(double startX, double startY, double radius, double strokeWidth, Color lineColour, Color fillColour){
+    public synchronized void addCirc(double startX, double startY, double radius, double strokeWidth, Color lineColour, Color fillColour){
         startX *= canvas.getWidth();
         radius *= canvas.getWidth();
         startY *= canvas.getHeight();
@@ -370,26 +412,26 @@ public class PaintCanvas {
         gc.fillOval(startX, startY, radius*2, radius*2);
     }
     
-    public void addErase(double startX, double startY, double width){
+    public synchronized void addErase(double startX, double startY, double width){
         startX *= canvas.getWidth();
         startY *= canvas.getHeight();
         gc.clearRect(startX-width/2.0, startY-width/2.0, width, width);
     }
     
-    public void startAddPath(double strokeWidth, Color colour){
+    public synchronized void startAddPath(double strokeWidth, Color colour){
         gc.setStroke(colour);
         gc.setLineWidth(strokeWidth);
         gc.beginPath();
     }
     
-    public void addPath(double x, double y){
+    public synchronized void addPath(double x, double y){
         x *= canvas.getWidth();
         y *= canvas.getHeight();
         gc.lineTo(x, y);
         gc.stroke();
     }
     
-    public void finishAddPath(){
+    public synchronized void finishAddPath(){
         gc.closePath();
     }
     

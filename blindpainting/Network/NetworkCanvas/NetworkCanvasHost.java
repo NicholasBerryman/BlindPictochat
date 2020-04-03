@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blindpainting.GUI.common.networkcanvas;
+package blindpainting.Network.NetworkCanvas;
 
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasClient.OtherPlayer;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasClient.OtherPlayer;
 import blindpainting.GUI.viewing.DrawQueue;
 import java.io.EOFException;
 import java.io.IOException;
@@ -28,11 +28,12 @@ public class NetworkCanvasHost {
     ServerSocket host;
     ArrayList<GameClient> clients = new ArrayList<>();
     int activePainterIndex;
+    boolean started = false;
     
     public void startHost(int port) throws IOException{
         host = new ServerSocket(port);
         Thread t = new Thread(() -> {
-            while (true)
+            while (!started)
             {
                 try {
                     GameClient c = GameClient.accept(host);
@@ -124,6 +125,7 @@ public class NetworkCanvasHost {
     }
     
     public void sendStart() throws IOException{
+        started = true;
         sendToAll("start");
         for (int i = 0; i < clients.size(); i++){
             clients.get(i).send(i);
@@ -142,6 +144,10 @@ public class NetworkCanvasHost {
         sendToAll(clients.get(activePainterIndex).getName());
     }
     
+    public void sendClear() throws IOException{
+        sendToAll("clear");
+    }
+    
     public void sendNextTurn() throws IOException{
         for (int i = activePainterIndex+1; true; i++){
             if (i >= clients.size()) i = 0;
@@ -150,7 +156,6 @@ public class NetworkCanvasHost {
                 break;
             }
         }
-        System.out.println(activePainterIndex);
         sendToAll("turn");
         sendToAll(activePainterIndex);
         sendToAll(clients.get(activePainterIndex).getName());
@@ -273,7 +278,6 @@ class NetworkCanvasHostListener implements Runnable {
                         break;
                     case "stroke":
                         item = (DrawQueue) gc.read();
-                        System.out.println("Relaying: "+item.toString());
                         nc.sendStroke(gc, item);
                         if ("Painter".equals(gc.getRole())) nc.sendNextTurn();
                         break;
@@ -282,6 +286,8 @@ class NetworkCanvasHostListener implements Runnable {
                         nc.sendClients();
                         running = false;
                         break;
+                    case "clear":
+                        nc.sendClear();
                     default:
                         break;
                 }
@@ -293,4 +299,3 @@ class NetworkCanvasHostListener implements Runnable {
     }
 }
 
-//TODO do turn order and stuff like that

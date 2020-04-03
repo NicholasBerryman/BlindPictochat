@@ -5,8 +5,8 @@
  */
 package blindpainting.GUI.drawing;
 
-import blindpainting.GUI.Words.Words;
-import blindpainting.GUI.common.PaintCanvas;
+import blindpainting.Words.Words;
+import blindpainting.GUI.PaintCanvas;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;

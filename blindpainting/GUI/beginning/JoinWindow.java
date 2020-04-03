@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blindpainting.GUI.common.beginning;
+package blindpainting.GUI.beginning;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

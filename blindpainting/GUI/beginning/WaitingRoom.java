@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blindpainting.GUI.common.beginning;
+package blindpainting.GUI.beginning;
 
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasClient;
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasClient.OtherPlayer;
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasHost;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasClient;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasClient.OtherPlayer;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasHost;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

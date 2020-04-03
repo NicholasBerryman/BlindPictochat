@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package blindpainting.GUI.common.networkcanvas;
+package blindpainting.Network.NetworkCanvas;
 
-import blindpainting.GUI.common.PaintCanvas;
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasClient.OtherPlayer;
+import blindpainting.GUI.PaintCanvas;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasClient.OtherPlayer;
 import blindpainting.GUI.viewing.DrawQueue;
 import java.io.EOFException;
 import java.io.IOException;
@@ -105,13 +105,16 @@ public class NetworkCanvasClient {
     }
     
     public void sendStroke(DrawQueue toSend) throws IOException{
-        System.out.println("Sending: "+toSend.toString());
         out.writeObject("stroke");
         out.writeObject(toSend);
         out.reset();
     }
     public void sendExit() throws IOException{
         out.writeObject("exit");
+    }
+    
+    public void sendClear() throws IOException{
+        out.writeObject("clear");
     }
     
     PaintCanvas getCanvas(){
@@ -174,7 +177,6 @@ class NetworkCanvasClientListener implements Runnable {
                         break;
                     case "stroke":
                         DrawQueue item = (DrawQueue) nc.read();
-                        System.out.println("Receiving: "+item.toString());
                         nc.getCanvas().showDrawQueue(item);
                         break;
                     case "connections":
@@ -191,10 +193,12 @@ class NetworkCanvasClientListener implements Runnable {
                         nc.myTurn = Objects.equals(turnIndex, nc.id);
                         nc.turnName = turnName;
                         break;
+                    case "clear":
+                        nc.getCanvas().clear();
+                        break;
                     default:
                         break;
                 }
-                
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(NetworkCanvasHostListener.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -5,10 +5,10 @@
  */
 package blindpainting;
 
-import blindpainting.GUI.common.beginning.JoinWindow;
-import blindpainting.GUI.common.beginning.WaitingRoom;
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasClient;
-import blindpainting.GUI.common.networkcanvas.NetworkCanvasHost;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasClient;
+import blindpainting.Network.NetworkCanvas.NetworkCanvasHost;
+import blindpainting.GUI.beginning.JoinWindow;
+import blindpainting.GUI.beginning.WaitingRoom;
 import blindpainting.GUI.drawing.DrawWindow;
 import java.io.IOException;
 import javafx.application.Application;

@@ -5,8 +5,8 @@
  */
 package blindpainting.GUI.viewing;
 
-import blindpainting.GUI.common.PaintCanvas;
-import blindpainting.GUI.common.PaintCanvas.Shape;
+import blindpainting.GUI.PaintCanvas;
+import blindpainting.GUI.PaintCanvas.Shape;
 import java.io.Serializable;
 import java.util.HashMap;
 import javafx.scene.paint.Color;

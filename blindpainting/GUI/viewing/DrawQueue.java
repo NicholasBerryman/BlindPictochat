@@ -5,7 +5,7 @@
  */
 package blindpainting.GUI.viewing;
 
-import blindpainting.GUI.common.PaintCanvas;
+import blindpainting.GUI.PaintCanvas;
 import java.io.Serializable;
 import java.util.LinkedList;
 
