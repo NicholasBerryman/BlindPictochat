@@ -29,6 +29,7 @@ import javafx.scene.shape.Rectangle;
  */
 public class PaintCanvas {
     private final Canvas canvas;
+    private final Pane gridMidlay;
     private final Pane overlay;
     private final Pane canvasPane = new Pane();
     private final GraphicsContext gc;
@@ -54,11 +55,12 @@ public class PaintCanvas {
         canvas = new Canvas(1080, 790);
         canvas.widthProperty().bind(canvasPane.widthProperty());
         canvas.heightProperty().bind(canvasPane.widthProperty());
+        gridMidlay = new Pane();
         overlay = new Pane();
         overlay.getChildren().add(line);
         overlay.getChildren().add(rect);
         overlay.getChildren().add(circ);
-        canvasPane.getChildren().addAll(overlay, canvas);
+        canvasPane.getChildren().addAll(overlay, canvas, gridMidlay);
         gc = canvas.getGraphicsContext2D();
         
         currentShape = Shape.NONE;
@@ -122,6 +124,7 @@ public class PaintCanvas {
     }
     
     public void initialise(){
+        gridMidlay.setMouseTransparent(true);
         canvas.setOnMousePressed(e->{
             if (netCanvas.isMyTurn() || !"Painter".equals(netCanvas.getRole())){
                 lastStroke.clear();
@@ -373,6 +376,26 @@ public class PaintCanvas {
                 }
             }
         });
+    }
+    
+    public void drawGrid(boolean visible){
+        Pane p = gridMidlay;
+        p.getChildren().clear();
+        double stroke = 0.5;
+        p.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+        for (double x = 0; x <= canvas.getWidth(); x+=canvas.getWidth()/10.0){
+            Line l = new Line(x, 0, x, canvas.getHeight());
+            l.setStrokeWidth(stroke);
+            p.getChildren().add(l);
+        }
+        for (double y = 0; y <= canvas.getHeight(); y+=canvas.getHeight()/10.0){
+            Line l = new Line(0, y, canvas.getWidth(), y);
+            l.setStrokeWidth(stroke);
+            p.getChildren().add(l);
+        }
+        canvas.toBack();
+        overlay.toFront();
+        gridMidlay.setVisible(visible);
     }
     
     public synchronized void clear(){

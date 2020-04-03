@@ -7,6 +7,7 @@ package blindpainting.GUI.drawing;
 
 import blindpainting.Words.Words;
 import blindpainting.GUI.PaintCanvas;
+import blindpainting.Words.Words.WordSet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -59,6 +60,7 @@ public class DrawBar {
     
     private final PaintCanvas canvas;
     private String lastChat = "";
+    private WordSet wordSet = WordSet.easy;
     
     
     public DrawBar(PaintCanvas canvas){
@@ -164,14 +166,17 @@ public class DrawBar {
         t2.start();
         
         promptButton.setOnAction(value -> {
-            promptButton.setText(Words.generatePrompt()+" (Press for new)");
+            promptButton.setText(Words.generatePrompt(wordSet)+" (Press for new)");
         });
     }
     
     public VBox get(){
         return box;
     }
-    
+
+    public void setWordSet(WordSet wordSet) {
+        this.wordSet = wordSet;
+    }
 }
 
 

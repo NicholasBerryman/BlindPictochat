@@ -44,6 +44,7 @@ public class BlindPictochat extends Application {
                 connected = true;
                 if (!join.isHost()) new WaitingRoom(client).showAndWait();
                 else new WaitingRoom(client, host).showAndWait();
+                System.out.println("A");
                 window.start(primaryStage);
             } catch (IOException ex) {
                 primaryStage.close();

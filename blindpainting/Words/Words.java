@@ -12,6 +12,7 @@ import java.util.Random;
  * @author Nick Berryman
  */
 public class Words {
+    //From https://www.thegamegal.com/printables/
     private static final String[] easy = 
             ("cat"
             + ",sun"
@@ -132,9 +133,146 @@ public class Words {
             + ",branch"
             + ",robot").split(",");
     
-    public static String generatePrompt(){
+    //From https://www.thegamegal.com/printables/
+    private static final String[] reallyHard = 
+            ("vision"
+            + " loiterer"
+            + " observatory"
+            + " century"
+            + " Atlantis"
+            + " kilogram"
+            + " neutron"
+            + " stowaway"
+            + " psychologist"
+            + " exponential"
+            + " aristocrat"
+            + " eureka"
+            + " parody"
+            + " cartography"
+            + " figment"
+            + " philosophy"
+            + " tinting"
+            + " overture"
+            + " opaque"
+            + " The Nullarbor"
+            + " ironic"
+            + " zero"
+            + " landfill"
+            + " implode"
+            + " czar"
+            + " armada"
+            + " crisp"
+            + " stockholder"
+            + " inquisition"
+            + " mooch"
+            + " gallop"
+            + " archaeologist"
+            + " blacksmith"
+            + " addendum"
+            + " upgrade"
+            + " hang ten"
+            + " acre"
+            + " twang"
+            + " mine car"
+            + " protestant"
+            + " brunette"
+            + " stout"
+            + " quarantine"
+            + " tutor"
+            + " positive"
+            + " champion"
+            + " pastry"
+            + " tournament"
+            + " KFC"
+            + " rainwater"
+            + " random"
+            + " lyrics"
+            + " ice fishing"
+            + " clue"
+            + " flutter"
+            + " slump"
+            + " ligament"
+            + " flotsam"
+            + " siesta"
+            + " pomp").split(" ");
+    
+    private static final String[] idioms = 
+            (",out of the frying pan and into the fire"
+            + ",one leg in the door"
+            + ",why the long face?"
+            + ",in the same boat"
+            + ",up shit creek"
+            + ",raining cats and dogs"
+            + ",under the weather"
+            + ",green with envy"
+            + ",frog in your throat"
+            + ",head over heels in love"
+            + ",a wolf in sheep's clothing"
+            + ",grab the bull by the horns"
+            + ",out of this world"
+            + ",water under the bridge"
+            + ",put your foot in your mouth"
+            + ",bull in a china shop"
+            + ",don't have a cow"
+            + ",tie the knot"
+            + ",two left feet"
+            + ",cold feet"
+            + ",bouncing off the walls"
+            + ",a fifth wheel"
+            + ",kick the bucket"
+            + ",when in rome"
+            + ",scared stiff"
+            + ",a smart cookie"
+            + ",caught red handed"
+            + ",a fly on the wall"
+            + ",jumo the gun"
+            + ",throw a fit"
+            + ",take a hike"
+            + ",scaredy cat"
+            + ",carry a tune"
+            + ",eat my words"
+            + ",apple of my eye"
+            + ",hit the road"
+            + ",a blessing in disguise"
+            + ",piece of cake"
+            + ",all bark no bite"
+            + ",when pigs fly"
+            + ",cost an arm and a leg"
+            + ",hold your horses"
+            + ",the whole nine yards"
+            + ",everything but the kitchen sink"
+            + ",close, but no cigar"
+            + ",back to the drawing board"
+            + ",go out on a limb"
+            + ",wake up on the wrong side of the bed"
+            + ",steal my thunder"
+            + ",once in a blue moon"
+            + ",let the cat out of the bag"
+            + ",hit the sack"
+            + ",let bygones be bygones"
+            + ",grab the bull by the horns"
+            + ",make a mountain out of a molehill"
+            + ",dyed-in-the-wool"
+            + ",pull the wools over your eyes").split(",");
+   
+    public static String generatePrompt(WordSet set){
         Random rand = new Random();
-        int index = rand.nextInt(easy.length);
-        return easy[index];
+        
+        int index;
+        switch (set){
+            case easy:
+                index = rand.nextInt(easy.length);
+                return easy[index];
+            case reallyHard:
+                index = rand.nextInt(reallyHard.length);
+                return reallyHard[index];
+            case idioms:
+                index = rand.nextInt(idioms.length);
+                return idioms[index];
+        }
+        
+        return "";
     }
+    
+    public enum WordSet{easy, reallyHard, idioms}
 }
