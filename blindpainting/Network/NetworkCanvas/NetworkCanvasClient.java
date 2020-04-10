@@ -29,7 +29,7 @@ import javafx.scene.control.Alert;
 public class NetworkCanvasClient {
     private Socket client;
     ArrayList<OtherPlayer> otherPlayers = new ArrayList<>(); 
-    private ObjectInputStream in;
+    private SynchronizedInputStream in;
     private ObjectOutputStream out;
     private final PaintCanvas canvas;
     private String role;
@@ -49,7 +49,7 @@ public class NetworkCanvasClient {
         this.role = role;
         this.name = name;
         client = new Socket(ip, port);
-        in = new ObjectInputStream(client.getInputStream());
+        in = new SynchronizedInputStream(new ObjectInputStream(client.getInputStream()));
         out = new ObjectOutputStream(client.getOutputStream());
         out.flush();
         out.writeObject(role);
@@ -98,26 +98,26 @@ public class NetworkCanvasClient {
         return null;
     }
     
-    public void sendMessage(String toSend) throws IOException{
+    public synchronized void sendMessage(String toSend) throws IOException{
         out.writeObject("message");
         out.writeObject(toSend);
         out.flush();
     }
     
-    public void sendStroke(DrawQueue toSend) throws IOException{
+    public synchronized void sendStroke(DrawQueue toSend) throws IOException{
         out.writeObject("stroke");
         out.writeObject(toSend);
         out.reset();
     }
-    public void sendExit() throws IOException{
+    public synchronized void sendExit() throws IOException{
         out.writeObject("exit");
     }
     
-    public void sendClear() throws IOException{
+    public synchronized void sendClear() throws IOException{
         out.writeObject("clear");
     }
     
-    public void sendDone() throws IOException{
+    public synchronized void sendDone() throws IOException{
         out.writeObject("done");
     }
     
@@ -192,7 +192,7 @@ class NetworkCanvasClientListener implements Runnable {
                         nc.id = (Integer) nc.read();
                         break;
                     case "turn":
-                        Integer turnIndex = (Integer) nc.read();
+                        Integer turnIndex = Integer.parseInt(nc.read().toString());
                         String turnName = (String) nc.read();
                         nc.myTurn = Objects.equals(turnIndex, nc.id);
                         nc.turnName = turnName;
@@ -209,7 +209,5 @@ class NetworkCanvasClientListener implements Runnable {
         }
     }
 }
-
-
 
 

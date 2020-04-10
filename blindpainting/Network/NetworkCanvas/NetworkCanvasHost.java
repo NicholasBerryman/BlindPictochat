@@ -11,6 +11,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -47,7 +48,7 @@ public class NetworkCanvasHost {
                 }
             }
         });
-        t.setDaemon(true);
+        t.setDaemon(true);  
         t.start();
     }
     
@@ -175,7 +176,7 @@ public class NetworkCanvasHost {
 
 class GameClient {
     private Socket sock;
-    private ObjectInputStream in;
+    private SynchronizedInputStream in;
     private ObjectOutputStream out;
     private String role;
     private String name;
@@ -187,7 +188,7 @@ class GameClient {
         gc.sock = host.accept();
         gc.out = new ObjectOutputStream(gc.sock.getOutputStream());
         gc.out.flush();
-        gc.in = new ObjectInputStream(gc.sock.getInputStream());
+        gc.in = new SynchronizedInputStream(new ObjectInputStream(gc.sock.getInputStream()));
         String role = gc.in.readObject().toString();
         switch (role){
             case "Instructor":
@@ -206,7 +207,7 @@ class GameClient {
         return gc;
     }
     
-    public Object read() throws IOException, ClassNotFoundException, SocketException{
+    public Object read() throws IOException, ClassNotFoundException, SocketException, StreamCorruptedException{
         boolean block = true;
         while (block){
             try{
@@ -229,9 +230,10 @@ class GameClient {
         return null;
     }
     
-    public void send(Object toSend) throws IOException{
+    public synchronized void send(Object toSend) throws IOException{
         out.writeObject(toSend);
         out.reset();
+        //Thread.sleep(10);
     }
     
     public String getRole(){
@@ -295,10 +297,25 @@ class NetworkCanvasHostListener implements Runnable {
                         break;
                 }
                 
-            } catch (IOException | ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex ) {
                 Logger.getLogger(NetworkCanvasHostListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 }
 
+class SynchronizedInputStream{
+    private final ObjectInputStream in;
+
+    public SynchronizedInputStream(ObjectInputStream in) {
+        this.in = in;
+    }
+    
+    public synchronized Object readObject() throws ClassNotFoundException, IOException{
+        return in.readObject();
+    }
+    
+    public synchronized void reset() throws IOException{
+        in.reset();
+    }
+}

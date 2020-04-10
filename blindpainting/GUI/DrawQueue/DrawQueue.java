@@ -25,15 +25,14 @@ public class DrawQueue implements Serializable{
     }
     
     public DrawQueueItem pop(){
-        return queue.poll();
+        return queue.pop();
     }
     
     public void clear(){
         queue.clear();
     }
     
-    public void pop(PaintCanvas canvas){
-        DrawQueueItem item = queue.pop();
+    private void run(DrawQueueItem item, PaintCanvas canvas){
         switch(item.getShape()){
             case LINE:
                 canvas.addLine(
@@ -64,20 +63,6 @@ public class DrawQueue implements Serializable{
                         item.getColor("fill"));
                 break;
             case PATH:
-                int state = (int)item.get("state");
-                switch (state){
-                    case 0:
-                        canvas.startAddPath(item.get("strokeWidth"), item.getColor("line"));
-                        break;
-                        
-                    case 1:
-                        canvas.addPath(item.get("x"), item.get("y"));
-                        break;
-                        
-                    case 2:
-                        canvas.finishAddPath();
-                        break;
-                }
                 break;
             case ERASE:
                 canvas.addErase(
@@ -88,6 +73,14 @@ public class DrawQueue implements Serializable{
             default:
                 break;
         }
+    }
+    
+    public void peek(PaintCanvas canvas){
+        run(queue.peek(), canvas);
+    }
+    
+    public void pop(PaintCanvas canvas){
+        run(queue.pop(), canvas);
     }
     
     @Override
